@@ -1,0 +1,45 @@
+\ Program Name: f103-red-stack-prompt.fs
+\ Date: Sat 23 Nov 2019 18:23:59 AEDT
+\ Copyright 2019 by t.j.porter <terry@tjporter.com.au>, licensed under the GPLV2
+\ For Mecrisp-Stellaris by Matthias Koch.
+\ https://sourceforge.net/projects/mecrisp/
+\ Chip: STM32F103, Board: Olimex P103
+\ Clock: 8 Mhz using the internalRC clock, unless otherwise stated
+\ All register names are CMSIS-SVD compliant
+\ Note: gpio a,b,c,d,e, and uart1 are enabled by Mecrisp-Stellaris Core.
+\ Requires preloaded support program(s): 
+\ Standalone: no preloaded support files required
+\
+\ This Program : make the prompt red when stack >= 1
+\
+\ ---------------------------------------------------------------------------\
+ compiletoram
+ \ compiletoflash
+
+ 
+ \ designed for a white background with black text, and a red prompt when the
+ \ stack is not empty, but you can change to suit from the table below.
+
+ : esc      ( -- ) 27 emit ;
+ : black    ( -- cursor colour )  esc ." [30;0m" ;    
+ : red	    ( -- cursor colour )  esc ." [31;1m" ;
+ : green    ( -- cursor colour )  esc ." [32;1m" ;
+ : yellow   ( -- cursor colour )  esc ." [33;1m" ;
+ : blue	    ( -- cursor colour )  esc ." [34;1m" ;
+ : magenta  ( -- cursor colour )  esc ." [35;1m" ;
+ : cyan	    ( -- cursor colour )  esc ." [36;1m" ;
+ : white    ( -- cursor colour )  esc ." [37;1m" ;
+
+ : prompt ( -- )
+   begin 
+       depth if
+       red ." ok. "  black cr	 \ prompt
+       else ." ok. " cr
+       then
+     query  interpret
+   again
+ ;
+ 
+ : init.prompt ['] prompt hook-quit ! ;  
+ 
+ init.prompt quit 

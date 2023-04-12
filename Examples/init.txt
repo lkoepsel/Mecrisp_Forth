@@ -1,0 +1,31 @@
+\ Using the INIT word for turnkey applications, an example by t.Porter 2016
+\
+\ If a word named INIT is found in the Dictionary at boot, the contents will be executed.
+\ Note, if INIT is a closed loop with no method to exit the loop such as KEY?, reflashing the MCU will be required to alter the program.
+
+\ METHOD:
+\ Create a INIT word which prints a short message and save it to Flash
+
+compiletoflash
+: INIT cr ." init-1 run at bootup " cr ;
+compiletoram
+
+\ rebooting the MCU will print the message "init-1 run at bootup" as intended. But what if you want to add something to the bootup later on, and still want the first INIT to be used ?
+
+\ This is easily done, but the executable location of the first INIT word above must be found (note the value will probably be different for you on a different system)
+
+
+\ run "words" and look for the init word at the base of the list,  use "Code: XXXXXXXX" in this case 0000404C  <--NOTE !! DON'T USE THIS, USE YOURS!
+
+\ now create another init word and call the previous INIT word with 'EXECUTE". Don't forget to add a leading "$" as this is a HEX value. This can be done
+\ as many times as required with multiple INIT's
+
+compiletoflash
+: INIT cr ." init-2 run at bootup " cr $0000404C EXECUTE cr ;
+compiletoram
+
+
+\ rebooting should print :-
+\ init-2 run at bootup
+\ init-1 run at bootup
+
